@@ -2688,19 +2688,37 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 258:
+/***/ 195:
 /***/ ((module) => {
 
-let wait = function (milliseconds) {
-  return new Promise((resolve) => {
-    if (typeof milliseconds !== 'number') {
-      throw new Error('milliseconds not a number');
+let bumpVersion = async function (version, bump) {
+    if (typeof version !== 'string') {
+        throw new Error('version not a string');
     }
-    setTimeout(() => resolve("done!"), milliseconds)
-  });
+    if (bump !== 'major' && bump !== 'minor' && bump !== 'patch') {
+        throw new Error("bump must be either 'major', 'minor', or 'patch'");
+    }
+    let versionParts = version.split('.');
+    if (versionParts.length < 3) {
+        throw new Error('version must be in the format x.y.z');
+    }
+    let major = parseInt(versionParts[0]);
+    let minor = parseInt(versionParts[1]);
+    let patch = parseInt(versionParts[2]);
+    if (bump === 'major') {
+        major++;
+        minor = 0;
+        patch = 0;
+    } else if (bump === 'minor') {
+        minor++;
+        patch = 0;
+    } else if (bump === 'patch') {
+        patch++;
+    }
+    return major + '.' + minor + '.' + patch;
 };
 
-module.exports = wait;
+module.exports = bumpVersion;
 
 
 /***/ }),
@@ -2835,20 +2853,17 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const core = __nccwpck_require__(186);
-const wait = __nccwpck_require__(258);
+const bumpVersion = __nccwpck_require__(195);
 
-
-// most @actions toolkit packages have async methods
 async function run() {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    const version = core.getInput('version');
+    const bump = core.getInput('bump');
+    core.info(`Bumping ${bump} version of ${version} ...`);
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+    const bumpedVersion = await bumpVersion(version, bump);
 
-    core.setOutput('time', new Date().toTimeString());
+    core.setOutput('version', bumpedVersion);
   } catch (error) {
     core.setFailed(error.message);
   }

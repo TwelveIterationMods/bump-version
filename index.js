@@ -1,18 +1,15 @@
 const core = require('@actions/core');
-const wait = require('./wait');
+const bumpVersion = require('./version');
 
-
-// most @actions toolkit packages have async methods
 async function run() {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    const version = core.getInput('version');
+    const bump = core.getInput('bump');
+    core.info(`Bumping ${bump} version of ${version} ...`);
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+    const bumpedVersion = await bumpVersion(version, bump);
 
-    core.setOutput('time', new Date().toTimeString());
+    core.setOutput('version', bumpedVersion);
   } catch (error) {
     core.setFailed(error.message);
   }

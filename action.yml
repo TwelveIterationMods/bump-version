@@ -1,13 +1,15 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Bump Semantic Version'
+description: 'Bumps either major, minor, or patch of a semantic version. Only works for simple x.y.z versions.'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  version:
+    description: 'version in x.y.z format'
     required: true
-    default: '1000'
+  bump:
+    description: 'major, minor, or patch'
+    required: true
 outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  version:
+    description: 'The bumped version'
 runs:
   using: 'node16'
   main: 'dist/index.js'
