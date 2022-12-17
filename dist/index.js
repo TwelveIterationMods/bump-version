@@ -2695,7 +2695,7 @@ let bumpVersion = async function (version, bump) {
     if (typeof version !== 'string') {
         throw new Error('version not a string');
     }
-    if (bump !== 'major' && bump !== 'minor' && bump !== 'patch') {
+    if (bump !== 'major' && bump !== 'minor' && bump !== 'patch' && bump !== 'none') {
         throw new Error("bump must be either 'major', 'minor', or 'patch'");
     }
     let versionParts = version.split('.');
